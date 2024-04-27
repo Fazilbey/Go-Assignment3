@@ -31,20 +31,6 @@ func init() {
 		Password: "",
 		DB:       0,
 	})
-
-	const (
-		connString = "postgresql://postgres:1234@localhost:5432/postgres"
-	)
-
-	conn, err := pgx.Connect(context.Background(), connString)
-	if err != nil {
-		panic(err)
-	}
-
-	err = conn.Ping(context.Background())
-	if err != nil {
-		panic(err)
-	}
 }
 
 func createProduct(conn *pgx.Conn, product Product) error {
@@ -121,6 +107,21 @@ func getProductFromDB(id int) *Product {
 }
 
 func main() {
+	const (
+		connString = "postgresql://postgres:1234@localhost:5432/postgres"
+	)
+
+	var err error
+	db, err = sql.Open("postgres", connString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	http.HandleFunc("/products/", getProductByIDHandler)
 
